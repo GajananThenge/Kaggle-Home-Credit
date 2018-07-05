@@ -130,3 +130,64 @@ def data_preprocessing_application(file_path):
 file_path = r'application_train.csv'
 
 data_preprocessing_application(file_path)
+
+
+
+#2nd code
+def data_prep_appli(file_path):
+    try:
+        import pandas as pd
+        import numpy as np
+        from sklearn.preprocessing import Imputer
+        #from sklearn.preprocessing import LabelEncoder,OneHotEncoder
+        from sklearn.preprocessing import StandardScaler
+        #Read df
+        df = pd.read_csv(file_path)
+        
+        #Fill all NaN values by zeros
+        df = df.fillna(0)
+        
+        g = df.columns.to_series().groupby(df.dtypes).groups
+        
+        float64_data_col = list(df.select_dtypes(include=['float64']).columns)
+        
+         #Scaling
+        # OWN_CAR_AGE
+        sc_own_car_age = StandardScaler()
+        sc_own_car_age=sc_own_car_age.fit_transform(df['OWN_CAR_AGE'].values.reshape(-1,1))
+        df['OWN_CAR_AGE'] = sc_own_car_age
+        
+        sc_amt_income_total= StandardScaler()
+        sc_amt_income_total=sc_amt_income_total.fit_transform(df['AMT_INCOME_TOTAL'].values.reshape(-1,1))
+        df['AMT_INCOME_TOTAL'] = sc_amt_income_total
+        
+        sc_amt_credit = StandardScaler()
+        sc_amt_credit = sc_amt_credit.fit_transform(df['AMT_CREDIT'].values.reshape(-1,1))
+        df['AMT_CREDIT'] = sc_amt_credit
+        
+        sc_amt_annuity= StandardScaler()
+        sc_amt_annuity=sc_amt_annuity.fit_transform(df['AMT_ANNUITY'].values.reshape(-1,1))
+        df['AMT_ANNUITY'] = sc_amt_annuity
+        
+        sc_amt_goods_price = StandardScaler()
+        sc_amt_goods_price=sc_amt_goods_price.fit_transform(df['AMT_GOODS_PRICE'].values.reshape(-1,1))
+        df['AMT_GOODS_PRICE'] = sc_amt_goods_price
+        
+        #Convert all Categorical data into one_hot encoder
+        result_df= pd.get_dummies(df,dummy_na=True)
+        
+        for i in ['CODE_GENDER_XNA',
+                          'NAME_FAMILY_STATUS_Unknown',
+                          'NAME_INCOME_TYPE_Maternity leave']:
+            if i in result_df.columns:
+                result_df.drop([i], axis=1,inplace=True)
+        
+        return result_df
+    except Exception as e:
+        print(e)
+
+#file_path = r'D:\Personal\Kaggle\HomeCredit\all\application_train.csv'
+#
+#applicationtrain= data_preprocessing_application(file_path)
+#
+#apllication_test = data_preprocessing_application(r'D:\Personal\Kaggle\HomeCredit\all\application_test.csv')
